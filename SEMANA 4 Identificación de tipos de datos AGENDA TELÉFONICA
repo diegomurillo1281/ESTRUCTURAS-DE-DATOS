@@ -1,0 +1,378 @@
+# -*- coding: utf-8 -*-
+"""
+Solución de Agenda Telefónica utilizando Programación Orientada a Objetos (POO)
+y diversas estructuras de datos.
+"""
+
+import uuid # Módulo para generar identificadores únicos (UUIDs)
+
+# ==============================================================================
+# 1. Clase Contacto: Representa un "Registro" o "Estructura"
+# ==============================================================================
+class Contacto:
+    """
+    Representa un contacto individual en la agenda telefónica.
+    Actúa como una 'estructura' o 'registro' que agrupa datos relacionados.
+    """
+    def __init__(self, nombre, apellido, numero_telefono, email="", direccion=""):
+        """
+        Constructor de la clase Contacto.
+        :param nombre: Nombre(s) del contacto (string).
+        :param apellido: Apellido(s) del contacto (string).
+        :param numero_telefono: Número de teléfono del contacto (string, clave principal).
+        :param email: Correo electrónico del contacto (opcional, string).
+        :param direccion: Dirección física del contacto (opcional, string).
+        """
+        self.id = str(uuid.uuid4()) # Genera un ID único para cada contacto, útil para gestión interna.
+        self.nombre = nombre
+        self.apellido = apellido
+        self.numero_telefono = numero_telefono
+        self.email = email
+        self.direccion = direccion
+
+    def get_nombre_completo(self):
+        """Retorna el nombre completo del contacto (Apellido(s), Nombre(s))."""
+        return f"{self.apellido} {self.nombre}".strip()
+
+    def mostrar_info(self):
+        """Muestra la información detallada del contacto de forma formateada."""
+        print(f"--- Contacto ID: {self.id[:8]}... ---") # Mostrar solo una parte del ID para brevedad
+        print(f"  Nombre Completo: {self.get_nombre_completo()}")
+        print(f"  Teléfono: {self.numero_telefono}")
+        if self.email:
+            print(f"  Email: {self.email}")
+        if self.direccion:
+            print(f"  Dirección: {self.direccion}")
+        print("---------------------------")
+
+# ==============================================================================
+# 2. Clase AgendaTelefonica: Gestión de Contactos con Diferentes Estructuras
+# ==============================================================================
+class AgendaTelefonica:
+    """
+    Gestiona la colección de objetos Contacto.
+    Permite almacenar, agregar, eliminar, buscar y visualizar contactos.
+    Se puede inicializar con una 'lista' (vector) o un 'diccionario'.
+    """
+    def __init__(self, tipo_estructura="lista"):
+        """
+        Constructor de la AgendaTelefonica.
+        :param tipo_estructura: "lista" para usar una lista (vector),
+                                "diccionario" para usar un diccionario (hash map).
+        """
+        self.tipo_estructura = tipo_estructura
+        if self.tipo_estructura == "lista":
+            self.contactos = []  # Almacena objetos Contacto en una lista (vector dinámico)
+            print(f"Agenda inicializada con una {self.tipo_estructura} (vector de objetos).")
+        elif self.tipo_estructura == "diccionario":
+            # Almacena objetos Contacto en un diccionario, usando el número de teléfono como clave única.
+            self.contactos = {}
+            print(f"Agenda inicializada con un {self.tipo_estructura} (mapa asociativo).")
+        else:
+            raise ValueError("Tipo de estructura no soportado. Use 'lista' o 'diccionario'.")
+
+    def agregar_contacto(self, contacto):
+        """
+        Añade un nuevo objeto Contacto a la agenda.
+        Verifica que el objeto sea de tipo Contacto y maneja duplicados en diccionario.
+        :param contacto: Objeto de tipo Contacto a agregar.
+        """
+        if not isinstance(contacto, Contacto):
+            print("Error: Solo se pueden agregar objetos de tipo Contacto.")
+            return False
+
+        if self.tipo_estructura == "lista":
+            self.contactos.append(contacto)
+            print(f"Contacto '{contacto.get_nombre_completo()}' agregado a la agenda.")
+        elif self.tipo_estructura == "diccionario":
+            # Usamos el número de teléfono como clave. Verificamos duplicidad.
+            if contacto.numero_telefono in self.contactos:
+                print(f"Advertencia: Ya existe un contacto con el número {contacto.numero_telefono}. No se agregó.")
+                return False
+            self.contactos[contacto.numero_telefono] = contacto
+            print(f"Contacto '{contacto.get_nombre_completo()}' agregado a la agenda.")
+        return True
+
+    def eliminar_contacto(self, criterio_busqueda):
+        """
+        Elimina un contacto de la agenda por su número de teléfono o por nombre/apellido parcial.
+        :param criterio_busqueda: String (número de teléfono, o parte de nombre/apellido).
+        :return: True si el contacto fue eliminado, False en caso contrario.
+        """
+        if self.tipo_estructura == "lista":
+            contactos_a_mantener = []
+            eliminado = False
+            for contacto in self.contactos:
+                if criterio_busqueda.lower() in contacto.get_nombre_completo().lower() or \
+                   criterio_busqueda == contacto.numero_telefono:
+                    print(f"Contacto '{contacto.get_nombre_completo()}' eliminado de la lista.")
+                    eliminado = True
+                else:
+                    contactos_a_mantener.append(contacto)
+            self.contactos = contactos_a_mantener # Reconstruye la lista sin los eliminados
+            return eliminado
+        
+        elif self.tipo_estructura == "diccionario":
+            # Intentar eliminar directamente por número de teléfono (clave)
+            if criterio_busqueda in self.contactos:
+                contacto_eliminado = self.contactos.pop(criterio_busqueda)
+                print(f"Contacto '{contacto_eliminado.get_nombre_completo()}' eliminado del diccionario por número.")
+                return True
+            else:
+                # Si no es el número, buscar por nombre/apellido (requiere iterar sobre los valores)
+                contactos_para_eliminar_keys = []
+                for num_tel, contacto in self.contactos.items():
+                    if criterio_busqueda.lower() in contacto.get_nombre_completo().lower():
+                        contactos_para_eliminar_keys.append(num_tel)
+                
+                if contactos_para_eliminar_keys:
+                    for num_key in contactos_para_eliminar_keys:
+                        contacto_eliminado = self.contactos.pop(num_key)
+                        print(f"Contacto '{contacto_eliminado.get_nombre_completo()}' eliminado del diccionario por nombre/apellido.")
+                    return True
+        
+        print(f"Contacto con criterio '{criterio_busqueda}' no encontrado para eliminar.")
+        return False
+
+    def buscar_contacto(self, criterio_busqueda):
+        """
+        Busca contactos por nombre, apellido o número de teléfono.
+        :param criterio_busqueda: String con el nombre, apellido o número a buscar.
+        :return: Una lista de objetos Contacto que coinciden con el criterio.
+        """
+        resultados = []
+        criterio_lower = criterio_busqueda.lower() # Normalizar el criterio de búsqueda
+
+        if self.tipo_estructura == "lista":
+            for contacto in self.contactos:
+                # Búsqueda por número exacto o por subcadena en nombre completo
+                if criterio_busqueda == contacto.numero_telefono or \
+                   criterio_lower in contacto.get_nombre_completo().lower():
+                    resultados.append(contacto)
+        elif self.tipo_estructura == "diccionario":
+            # 1. Intentar búsqueda directa por número de teléfono (clave)
+            if criterio_busqueda in self.contactos:
+                resultados.append(self.contactos[criterio_busqueda])
+            # 2. Si no se encontró por clave, buscar por nombre/apellido (iterando sobre valores)
+            else:
+                for contacto in self.contactos.values():
+                    if criterio_lower in contacto.get_nombre_completo().lower():
+                        resultados.append(contacto)
+        
+        return resultados
+
+    def mostrar_todos_contactos(self):
+        """
+        Visualiza todos los contactos en la agenda (Reportería).
+        """
+        print("\n=== REPORTE: AGENDA TELEFÓNICA COMPLETA ===")
+        if not self.contactos: # Verificar si la agenda está vacía
+            print("La agenda está vacía.")
+            return
+
+        contactos_a_mostrar = []
+        if self.tipo_estructura == "lista":
+            contactos_a_mostrar = self.contactos
+        elif self.tipo_estructura == "diccionario":
+            contactos_a_mostrar = list(self.contactos.values())
+        
+        # Opcional: Ordenar los contactos para la visualización, por ejemplo, por apellido y luego por nombre.
+        contactos_ordenados = sorted(contactos_a_mostrar, key=lambda c: (c.apellido.lower(), c.nombre.lower()))
+
+        for i, contacto in enumerate(contactos_ordenados):
+            print(f"--- Contacto #{i+1} ---")
+            contacto.mostrar_info()
+        
+        print(f"Total de contactos: {len(self.contactos)}")
+        print("==========================================")
+
+# ==============================================================================
+# 3. Datos de la Agenda (Listado Proporcionado)
+# ==============================================================================
+# Función auxiliar para parsear el nombre completo
+def parse_nombre_completo(full_name_str):
+    """
+    Heurística simple para dividir 'APELLIDOS Y NOMBRES' en Apellido y Nombre.
+    Asume que las últimas dos palabras son el nombre(s) y el resto son los apellido(s).
+    Si hay menos de 2 palabras, se maneja como nombre.
+    """
+    parts = full_name_str.split()
+    if len(parts) >= 2:
+        nombre = " ".join(parts[-2:]) # Las últimas dos palabras como nombre
+        apellido = " ".join(parts[:-2]) # El resto como apellido
+    elif len(parts) == 1:
+        nombre = parts[0]
+        apellido = ""
+    else: # Cadena vacía
+        nombre = ""
+        apellido = ""
+    return apellido.strip(), nombre.strip()
+
+# Listado de contactos proporcionado
+contactos_data = [
+    ("0941433526", "FRANCO COELLO KLEBER EDUARDO"),
+    ("1720816386", "RODRIGUEZ HURTADO CARLOS VINICIO"),
+    ("1718358987", "ALBAN CARVAJAL CRISTIAN EDUARDO"),
+    ("0941313025", "CABANILLA CANDO JOSEPH ESTUARDO"),
+    ("1207528173", "CUESTA GARCIA EDER ENRIQUE"),
+    ("0956637300", "BORJA TROYA STALIN ALDAHIR"),
+    ("0928268754", "DAVID ROMERO GABRIELA TABITA"),
+    ("0850275116", "VERA GARCÍA DAYANA MONCERRATTE"),
+    ("0503234395", "RAMIREZ OCHOA KEVIN VINICIO"),
+    ("1314584358", "INTRIAGO VELEZ XIMENA KATHERINE"),
+    ("0940168099", "CARRERA FLORES ALEJANDRA BRIGGITTE"),
+    ("0931052732", "PARRALES LOZANO ALEXANDRA MADELAYNE"),
+    ("0920079670", "CASTRO SUAREZ DIXON ANDRÉS"),
+    ("0803660422", "VELASCO PEÑAFIEL ANDERSON IVÁN"),
+    ("0930855432", "LOPEZ ASENCIO GABRIELA STEPHANIE"),
+    ("0929383016", "CORNEJO MENDOZA ÁNGEL EDUARDO"),
+    ("0941142051", "ALEAGA OCHOA JUAN SEBASTIÁN"),
+    ("1724342728", "RECALDE ESPINOZA JHON BRAYAN"),
+    ("1750103598", "CASTRO GUANOQUIZA WILLIAM RODRIGO"),
+    ("0940299704", "CRIOLLO HERAS JOSELYN ISABEL"),
+    ("0955886940", "MERCHAN SANCHEZ MICHAEL ESTIVEN"),
+    ("1723276042", "RUANO TUAREZ JONATHAN MESÍAS"),
+    ("0920323292", "ZAMBRANO MOREIRA JOSÉ ROBERTO"),
+    ("1206447219", "SOBENIS SALDAÑA BYRON OMAR"),
+    ("0919945857", "FIGUEROA ALMEIDA JOSSELINE MARÍA"),
+    ("0925366858", "JURADO RON CARLOS ALBERTO"),
+    ("2400170763", "GONZALEZ DESIDERIO CARLOS MANUEL"),
+    ("1719123166", "DUMANCELA ORTIZ JENNY MARGOTH"),
+    ("1755110705", "CEVALLOS MALDONADO HENRY BRAYAN"),
+    ("1726879784", "CABRERA CABRERA JUAN CARLOS"),
+    ("0603587130", "PAGUAY MONTALEZA MIRSHAN JAVIER"),
+    ("0605180421", "TENEMAZA CARANQUI DENNYS ELICEO"),
+    ("0952871143", "SOLEDISPA TANDAZO JESSICA SOLANGE"),
+    ("0604129296", "VARGAS LÓPEZ JOHNNY PAÚL"),
+    ("0603980095", "CABRERA MACHADO BLADIMIR ANTONIO"),
+    ("0201891728", "CHASI SISA SERGIO ENRIQUE"),
+    ("0550012421", "CAYANCELA IZA HENRY DANIEL")
+]
+
+# ==============================================================================
+# 4. Demostración de Uso y Reportería
+# ==============================================================================
+def run_demo():
+    """Función para demostrar el uso de la Agenda Telefónica."""
+
+    print("="*80)
+    print("DEMOSTRACIÓN DE AGENDA TELEFÓNICA CON LISTA (VECTOR DE OBJETOS)")
+    print("="*80)
+    agenda_lista = AgendaTelefonica(tipo_estructura="lista")
+
+    print("\n--- Agregando contactos a la Agenda (Lista) ---")
+    for tel, full_name in contactos_data:
+        apellido, nombre = parse_nombre_completo(full_name)
+        contacto = Contacto(nombre, apellido, tel)
+        agenda_lista.agregar_contacto(contacto)
+
+    # Reportería: Visualizar todos los contactos
+    agenda_lista.mostrar_todos_contactos()
+
+    # Reportería: Consultar/Buscar contactos en la Lista
+    print("\n" + "-"*30 + " CONSULTAS EN AGENDA (LISTA) " + "-"*30)
+    
+    print("\n--- Buscando 'EDUARDO' (en nombre/apellido) ---")
+    resultados_busqueda = agenda_lista.buscar_contacto("EDUARDO")
+    if resultados_busqueda:
+        for res in resultados_busqueda:
+            res.mostrar_info()
+    else:
+        print("No se encontraron contactos.")
+
+    print("\n--- Buscando '0941433526' (número exacto) ---")
+    resultados_busqueda = agenda_lista.buscar_contacto("0941433526")
+    if resultados_busqueda:
+        for res in resultados_busqueda:
+            res.mostrar_info()
+    else:
+        print("No se encontraron contactos.")
+    
+    print("\n--- Buscando 'ZAMBRANO' ---")
+    resultados_busqueda = agenda_lista.buscar_contacto("ZAMBRANO")
+    if resultados_busqueda:
+        for res in resultados_busqueda:
+            res.mostrar_info()
+    else:
+        print("No se encontraron contactos.")
+
+    # Eliminar contacto de la Lista
+    print("\n" + "-"*30 + " ELIMINACIÓN EN AGENDA (LISTA) " + "-"*30)
+    print("\n--- Intentando eliminar 'CABANILLA CANDO JOSEPH ESTUARDO' ---")
+    if agenda_lista.eliminar_contacto("CABANILLA CANDO JOSEPH ESTUARDO"):
+        agenda_lista.mostrar_todos_contactos()
+    else:
+        print("No se pudo eliminar el contacto.")
+    
+    print("\n--- Intentando eliminar '0952871143' ---")
+    if agenda_lista.eliminar_contacto("0952871143"):
+        agenda_lista.mostrar_todos_contactos()
+    else:
+        print("No se pudo eliminar el contacto.")
+
+
+    print("\n\n" + "="*80 + "\n")
+    print("DEMOSTRACIÓN DE AGENDA TELEFÓNICA CON DICCIONARIO (MAPA ASOCIATIVO)")
+    print("="*80)
+    agenda_diccionario = AgendaTelefonica(tipo_estructura="diccionario")
+
+    print("\n--- Agregando contactos a la Agenda (Diccionario) ---")
+    for tel, full_name in contactos_data:
+        apellido, nombre = parse_nombre_completo(full_name)
+        contacto = Contacto(nombre, apellido, tel)
+        agenda_diccionario.agregar_contacto(contacto)
+    
+    # Intentar agregar un contacto con número duplicado (no debería agregarlo)
+    print("\n--- Intentando agregar un número duplicado (0941433526) ---")
+    duplicado_contacto = Contacto("Duplicado", "Prueba", "0941433526")
+    agenda_diccionario.agregar_contacto(duplicado_contacto)
+
+    # Reportería: Visualizar todos los contactos
+    agenda_diccionario.mostrar_todos_contactos()
+
+    # Reportería: Consultar/Buscar contactos en el Diccionario
+    print("\n" + "-"*30 + " CONSULTAS EN AGENDA (DICCIONARIO) " + "-"*30)
+    
+    print("\n--- Buscando 'DAVID ROMERO GABRIELA TABITA' (nombre completo) ---")
+    resultados_busqueda_dic = agenda_diccionario.buscar_contacto("DAVID ROMERO GABRIELA TABITA")
+    if resultados_busqueda_dic:
+        for res in resultados_busqueda_dic:
+            res.mostrar_info()
+    else:
+        print("No se encontraron contactos.")
+
+    print("\n--- Buscando '0803660422' (búsqueda directa por clave) ---")
+    resultados_busqueda_dic = agenda_diccionario.buscar_contacto("0803660422")
+    if resultados_busqueda_dic:
+        for res in resultados_busqueda_dic:
+            res.mostrar_info()
+    else:
+        print("No se encontraron contactos.")
+    
+    print("\n--- Buscando 'JHON' (en nombre/apellido) ---")
+    resultados_busqueda_dic = agenda_diccionario.buscar_contacto("JHON")
+    if resultados_busqueda_dic:
+        for res in resultados_busqueda_dic:
+            res.mostrar_info()
+    else:
+        print("No se encontraron contactos.")
+
+
+    # Eliminar contacto del Diccionario
+    print("\n" + "-"*30 + " ELIMINACIÓN EN AGENDA (DICCIONARIO) " + "-"*30)
+    print("\n--- Intentando eliminar '1726879784' (por número - clave) ---")
+    if agenda_diccionario.eliminar_contacto("1726879784"):
+        agenda_diccionario.mostrar_todos_contactos()
+    else:
+        print("No se pudo eliminar el contacto.")
+    
+    print("\n--- Intentando eliminar 'MERCHAN SANCHEZ MICHAEL ESTIVEN' (por nombre/apellido) ---")
+    if agenda_diccionario.eliminar_contacto("MERCHAN SANCHEZ MICHAEL ESTIVEN"):
+        agenda_diccionario.mostrar_todos_contactos()
+    else:
+        print("No se pudo eliminar el contacto.")
+
+
+# Ejecutar la demostración al correr el script
+if __name__ == "__main__":
+    run_demo()
