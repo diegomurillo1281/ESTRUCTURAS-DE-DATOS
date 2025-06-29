@@ -1,0 +1,121 @@
+using System;
+using System.Collections.Generic; // Necesario para usar List<T>
+
+// Definición de la clase Asignatura
+// Esta clase representa una única asignatura del curso.
+public class Asignatura
+{
+    // Propiedad para almacenar el nombre de la asignatura.
+    public string Nombre { get; set; }
+
+    // Constructor de la clase Asignatura.
+    // Se utiliza para inicializar una nueva instancia de Asignatura con un nombre dado.
+    public Asignatura(string nombre)
+    {
+        Nombre = nombre;
+    }
+
+    // Método para representar la asignatura como una cadena de texto.
+    // Esto es útil cuando se quiere mostrar la asignatura directamente (ej. en un Console.WriteLine).
+    public override string ToString()
+    {
+        return $"Asignatura: {Nombre}";
+    }
+}
+
+// Definición de la clase Curso
+// Esta clase representa un curso y gestiona una colección de asignaturas.
+public class Curso
+{
+    // Una lista genérica de objetos Asignatura para almacenar las asignaturas del curso.
+    // 'List<Asignatura>' es una colección dinámica que puede crecer o encoger según sea necesario.
+    private List<Asignatura> asignaturas;
+    public string NombreCurso { get; private set; } // Propiedad para el nombre del curso
+
+    // Constructor de la clase Curso.
+    // Inicializa la lista de asignaturas y el nombre del curso cuando se crea una nueva instancia de Curso.
+    public Curso(string nombreCurso)
+    {
+        NombreCurso = nombreCurso;
+        asignaturas = new List<Asignatura>();
+    }
+
+    // Método para añadir una nueva asignatura al curso.
+    // Recibe un objeto Asignatura y lo añade a la lista interna.
+    public void AgregarAsignatura(Asignatura asignatura)
+    {
+        if (asignatura != null)
+        {
+            asignaturas.Add(asignatura);
+            Console.WriteLine($"'{asignatura.Nombre}' ha sido añadida al curso '{NombreCurso}'.");
+        }
+        else
+        {
+            Console.WriteLine("No se puede agregar una asignatura nula.");
+        }
+    }
+
+    // Método para mostrar todas las asignaturas almacenadas en la lista.
+    public void MostrarAsignaturas()
+    {
+        Console.WriteLine($"\n--- Asignaturas del curso '{NombreCurso}' ---");
+
+        // Verifica si la lista de asignaturas está vacía.
+        if (asignaturas.Count == 0)
+        {
+            Console.WriteLine("No hay asignaturas registradas en este curso.");
+        }
+        else
+        {
+            // Itera sobre cada asignatura en la lista y la muestra por pantalla.
+            // Se ha modificado el formato de salida para cumplir con el nuevo requisito.
+            for (int i = 0; i < asignaturas.Count; i++)
+            {
+                // Accede al nombre de la asignatura a través de su propiedad 'Nombre'.
+                Console.WriteLine($"Yo estudio {asignaturas[i].Nombre}");
+            }
+        }
+        Console.WriteLine("--------------------------------------\n");
+    }
+
+    // Método para obtener el número actual de asignaturas en el curso.
+    public int ContarAsignaturas()
+    {
+        return asignaturas.Count;
+    }
+}
+
+// Clase principal del programa donde se ejecuta la aplicación.
+public class Program
+{
+    public static void Main(string[] args)
+    {
+        Console.WriteLine("***** Programa de Gestión de Asignaturas *****\n");
+
+        // 1. Crear una instancia del curso.
+        // Aquí se crea un objeto 'miCurso' de la clase 'Curso'.
+        Curso miCurso = new Curso("Ingeniería de Software - 2025");
+
+        // 2. Crear instancias de asignaturas y agregarlas al curso.
+        // Se crean objetos 'Asignatura' y se usan para poblar la lista del curso.
+        miCurso.AgregarAsignatura(new Asignatura("Matemáticas"));
+        miCurso.AgregarAsignatura(new Asignatura("Física"));
+        miCurso.AgregarAsignatura(new Asignatura("Química"));
+        miCurso.AgregarAsignatura(new Asignatura("Historia"));
+        miCurso.AgregarAsignatura(new Asignatura("Lengua"));
+        miCurso.AgregarAsignatura(new Asignatura("Programación Orientada a Objetos"));
+
+
+        // 3. Mostrar las asignaturas por pantalla.
+        // Se llama al método 'MostrarAsignaturas' del objeto 'miCurso'.
+        miCurso.MostrarAsignaturas();
+
+        // Ejemplo adicional: Mostrar el conteo de asignaturas.
+        Console.WriteLine($"Total de asignaturas en el curso: {miCurso.ContarAsignaturas()}");
+
+        Console.WriteLine("\n***** Fin del Programa *****");
+
+        // Opcional: Esperar a que el usuario presione una tecla antes de cerrar la consola.
+        // Console.ReadKey();
+    }
+}
