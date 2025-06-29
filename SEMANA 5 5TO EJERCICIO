@@ -1,0 +1,74 @@
+using System;
+using System.Collections.Generic; // Para usar List<T>
+using System.Linq; // Para usar el método Reverse() de LINQ
+
+// Definición de la clase ListaNumerosInversa
+// Esta clase encapsula la lógica para almacenar y mostrar números en orden inverso.
+public class ListaNumerosInversa
+{
+    // Una lista privada para almacenar los números enteros.
+    private List<int> _numeros;
+
+    /// <summary>
+    /// Constructor de la clase ListaNumerosInversa.
+    /// Inicializa la lista y la llena con números del 1 al 10.
+    /// </summary>
+    public ListaNumerosInversa()
+    {
+        _numeros = new List<int>();
+        // Llenar la lista con números del 1 al 10.
+        for (int i = 1; i <= 10; i++)
+        {
+            _numeros.Add(i);
+        }
+        Console.WriteLine("Lista de números (1 al 10) creada.");
+    }
+
+    /// <summary>
+    /// Muestra los números de la lista por pantalla en orden inverso,
+    /// separados por comas.
+    /// </summary>
+    public void MostrarEnOrdenInverso()
+    {
+        Console.WriteLine("\n--- Números en orden inverso ---");
+
+        // Verifica si la lista está vacía antes de intentar mostrar.
+        if (_numeros.Count == 0)
+        {
+            Console.WriteLine("La lista está vacía.");
+            return;
+        }
+
+        // Utiliza el método Reverse() de LINQ para obtener una vista inversa de la lista.
+        // Esto no modifica la lista original, solo la secuencia de iteración.
+        var numerosInvertidos = _numeros.AsEnumerable().Reverse();
+
+        // Une los números invertidos en una sola cadena, separados por ", ".
+        // El método string.Join es muy eficiente para esto.
+        string resultado = string.Join(", ", numerosInvertidos);
+        
+        Console.WriteLine(resultado);
+        Console.WriteLine("---------------------------------\n");
+    }
+}
+
+// Clase principal del programa donde se ejecuta la aplicación.
+public class Program
+{
+    public static void Main(string[] args)
+    {
+        Console.WriteLine("***** Programa de Números en Orden Inverso *****\n");
+
+        // 1. Crear una instancia de la clase ListaNumerosInversa.
+        // Esto inicializa la lista con los números del 1 al 10.
+        ListaNumerosInversa miLista = new ListaNumerosInversa();
+
+        // 2. Llamar al método para mostrar los números en orden inverso.
+        miLista.MostrarEnOrdenInverso();
+
+        Console.WriteLine("***** Fin del Programa *****");
+
+        // Opcional: Esperar a que el usuario presione una tecla antes de cerrar la consola.
+        // Console.ReadKey();
+    }
+}
