@@ -1,0 +1,50 @@
+using System;
+using System.Collections.Generic; // Necesario para usar la clase Stack
+
+public class ParenthesisChecker
+{
+    // El método Main es el punto de entrada de la aplicación.
+    public static void Main(string[] args)
+    {
+        // Ejemplos de expresiones para probar la función IsBalanced.
+        string expression1 = "{7 + (8 * 5) - [(9 - 7) + (4 + 1)]}";
+        string expression2 = "{[()]()}";
+        string expression3 = "({[})"; // Desbalanceada
+        string expression4 = "((()))";
+        string expression5 = "(()"; // Desbalanceada
+        string expression6 = ""; // Cadena vacía, considerada balanceada
+        string expression7 = "([{}])"; // Balanceada
+        string expression8 = "({[<]})"; // Desbalanceada (caracteres no reconocidos)
+        string expression9 = "[(])"; // Desbalanceada (orden incorrecto)
+
+        // Imprimir el resultado para cada expresión de prueba.
+        Console.WriteLine($"Expresión: {expression1}");
+        Console.WriteLine($"Resultado: {IsBalanced(expression1)}\n");
+
+        Console.WriteLine($"Expresión: {expression2}");
+        Console.WriteLine($"Resultado: {IsBalanced(expression2)}\n");
+
+        Console.WriteLine($"Expresión: {expression3}");
+        Console.WriteLine($"Resultado: {IsBalanced(expression3)}\n");
+
+        Console.WriteLine($"Expresión: {expression4}");
+        Console.WriteLine($"Resultado: {IsBalanced(expression4)}\n");
+
+        Console.WriteLine($"Expresión: {expression5}");
+        Console.WriteLine($"Resultado: {IsBalanced(expression5)}\n");
+
+        Console.WriteLine($"Expresión: {expression6}");
+        Console.WriteLine($"Resultado: {IsBalanced(expression6)}\n");
+
+        Console.WriteLine($"Expresión: {expression7}");
+        Console.WriteLine($"Resultado: {IsBalanced(expression7)}\n");
+
+        Console.WriteLine($"Expresión: {expression8}");
+        Console.WriteLine($"Resultado: {IsBalanced(expression8)}\n");
+
+        Console.WriteLine($"Expresión: {expression9}");
+        Console.WriteLine($"Resultado: {IsBalanced(expression9)}\n");
+
+        // Mantener la consola abierta hasta que el usuario presione una tecla.
+        Console.WriteLine("Presiona cualquier tecla para salir...");
+        Console.ReadKey();
