@@ -1,0 +1,192 @@
+using System;
+using System.Collections.Generic; // Necesario para usar Queue y List
+using System.Diagnostics; // Necesario para usar Stopwatch (medir tiempo de ejecución)
+using System.Linq; // Necesario para métodos LINQ como Count()
+
+// Clase que representa a una persona en la cola
+public class Persona
+{
+    public int Id { get; set; } // Identificador único de la persona
+    public string Nombre { get; set; } // Nombre de la persona
+
+    // Constructor para inicializar una nueva persona
+    public Persona(int id, string nombre)
+    {
+        Id = id;
+        Nombre = nombre;
+    }
+
+    // Sobrescribe ToString() para una representación legible del objeto Persona
+    public override string ToString()
+    {
+        return $"[ID: {Id}, Nombre: {Nombre}]";
+    }
+}
+
+// Clase que simula la atracción y gestiona la cola de personas
+public class Atraccion
+{
+    // Capacidad máxima de asientos de la atracción
+    public int CapacidadAsientos { get; private set; }
+    // Cola para las personas esperando (FIFO: Primero en Entrar, Primero en Salir)
+    private Queue<Persona> colaPersonas;
+    // Lista para almacenar las personas a las que se les ha asignado un asiento
+    private List<Persona> asientosAsignados;
+
+    // Constructor de la clase Atraccion
+    public Atraccion(int capacidad)
+    {
+        CapacidadAsientos = capacidad;
+        colaPersonas = new Queue<Persona>();
+        asientosAsignados = new List<Persona>();
+        Console.WriteLine($"Atracción creada con {CapacidadAsientos} asientos disponibles.");
+    }
+
+    /// <summary>
+    /// Añade una persona al final de la cola.
+    /// </summary>
+    /// <param name="persona">Objeto Persona a encolar.</param>
+    public void EncolarPersona(Persona persona)
+    {
+        colaPersonas.Enqueue(persona); // Añade la persona al final de la cola
+        Console.WriteLine($"-> {persona.Nombre} ha entrado en la cola.");
+    }
+
+    /// <summary>
+    /// Asigna asientos a las personas en la cola hasta que la atracción esté llena
+    /// o la cola esté vacía.
+    /// </summary>
+    public void AsignarAsientos()
+    {
+        Console.WriteLine("\n--- Iniciando Asignación de Asientos ---");
+        int asientosOcupados = 0;
+
+        // Mientras haya personas en la cola y queden asientos disponibles
+        while (colaPersonas.Count > 0 && asientosOcupados < CapacidadAsientos)
+        {
+            // Saca a la persona del frente de la cola (Dequeue)
+            Persona personaAsignada = colaPersonas.Dequeue();
+            asientosAsignados.Add(personaAsignada); // Añade la persona a la lista de asientos asignados
+            asientosOcupados++;
+            Console.WriteLine($"<- Asignado asiento a {personaAsignada.Nombre}. Asientos ocupados: {asientosOcupados}/{CapacidadAsientos}");
+        }
+
+        // Mensaje final de la asignación
+        if (asientosOcupados == CapacidadAsientos)
+        {
+            Console.WriteLine("--- Atracción llena. Todos los asientos han sido asignados. ---");
+        }
+        else if (colaPersonas.Count == 0 && asientosOcupados > 0)
+        {
+            Console.WriteLine($"--- No quedan más personas en la cola. Se asignaron {asientosOcupados} asientos. ---");
+        }
+        else
+        {
+            Console.WriteLine("--- No se asignaron asientos (cola vacía o capacidad 0). ---");
+        }
+    }
+
+    /// <summary>
+    /// Visualiza todos los elementos que actualmente están en la cola.
+    /// </summary>
+    public void VisualizarCola()
+    {
+        Console.WriteLine("\n--- Estado Actual de la Cola ---");
+        if (colaPersonas.Count == 0)
+        {
+            Console.WriteLine("La cola está vacía.");
+            return;
+        }
+
+        int i = 1;
+        // Itera sobre los elementos de la cola sin eliminarlos
+        foreach (Persona p in colaPersonas)
+        {
+            Console.WriteLine($"{i}. {p.ToString()}");
+            i++;
+        }
+        Console.WriteLine($"Total de personas en cola: {colaPersonas.Count}");
+    }
+
+    /// <summary>
+    /// Consulta y muestra el primer elemento de la cola sin eliminarlo.
+    /// </summary>
+    public void ConsultarPrimerElemento()
+    {
+        Console.WriteLine("\n--- Consultando Primer Elemento de la Cola ---");
+        if (colaPersonas.Count == 0)
+        {
+            Console.WriteLine("La cola está vacía, no hay primer elemento.");
+            return;
+        }
+        // Peek() devuelve el elemento al principio de la cola sin eliminarlo
+        Persona primerPersona = colaPersonas.Peek();
+        Console.WriteLine($"La primera persona en la cola es: {primerPersona.ToString()}");
+    }
+
+    /// <summary>
+    /// Visualiza las personas a las que se les ha asignado un asiento.
+    /// </summary>
+    public void VisualizarAsientosAsignados()
+    {
+        Console.WriteLine("\n--- Asientos Asignados ---");
+        if (asientosAsignados.Count == 0)
+        {
+            Console.WriteLine("No se han asignado asientos aún.");
+            return;
+        }
+
+        int i = 1;
+        foreach (Persona p in asientosAsignados)
+        {
+            Console.WriteLine($"Asiento {i}: {p.ToString()}");
+            i++;
+        }
+        Console.WriteLine($"Total de asientos asignados: {asientosAsignados.Count}");
+    }
+}
+
+// Clase principal del programa
+public class Program
+{
+    public static void Main(string[] args)
+    {
+        // Inicia el cronómetro para medir el tiempo de ejecución
+        Stopwatch stopwatch = new Stopwatch();
+        stopwatch.Start();
+
+        // 1. Crear la atracción con 30 asientos
+        Atraccion miAtraccion = new Atraccion(30);
+
+        // 2. Simular la llegada de personas a la cola (más de 30 para que haya espera)
+        Console.WriteLine("\n--- Simulación de Llegada de Personas ---");
+        for (int i = 1; i <= 40; i++) // 40 personas llegan para 30 asientos
+        {
+            miAtraccion.EncolarPersona(new Persona(i, $"Persona_{i}"));
+            System.Threading.Thread.Sleep(50); // Pequeña pausa para simular el tiempo real de llegada
+        }
+
+        // 3. Visualizar la cola antes de la asignación
+        miAtraccion.VisualizarCola();
+
+        // 4. Consultar el primer elemento de la cola
+        miAtraccion.ConsultarPrimerElemento();
+
+        // 5. Asignar los asientos
+        miAtraccion.AsignarAsientos();
+
+        // 6. Visualizar la cola después de la asignación (debería mostrar a los que no obtuvieron asiento)
+        miAtraccion.VisualizarCola();
+
+        // 7. Visualizar los asientos que fueron asignados
+        miAtraccion.VisualizarAsientosAsignados();
+
+        // Detiene el cronómetro
+        stopwatch.Stop();
+        // Imprime el tiempo total de ejecución
+        Console.WriteLine($"\n--- Tiempo de Ejecución del Código: {stopwatch.ElapsedMilliseconds} ms ---");
+
+        Console.WriteLine("\nSimulación finalizada. Presiona cualquier tecla para salir.");
+        Console.ReadKey();
+    }
+}
