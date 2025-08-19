@@ -6,7 +6,7 @@ Este proyecto simula una campaña de vacunación contra el COVID-19 utilizando t
 
 - Lenguaje: C#
 - Generar:
-  - 500 ciudadanos con nombres y apellidos ficticios
+  - 500 ciudadanos con nombres y apellidos comunes
   - 75 ciudadanos vacunados con Pfizer
   - 75 ciudadanos vacunados con AstraZeneca
 - Aplicar operaciones de teoría de conjuntos:
