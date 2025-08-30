@@ -1,8 +1,3 @@
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
 class Traductor
 {
     static Dictionary<string, string> diccionario = new Dictionary<string, string>()
