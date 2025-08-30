@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
 class Traductor
 {
     static Dictionary<string, string> diccionario = new Dictionary<string, string>()
@@ -30,7 +34,7 @@ class Traductor
         while (true)
         {
             Console.WriteLine("\n==================== MENÚ ====================");
-            Console.WriteLine("1. Traducir una frase");
+            Console.WriteLine("1. Traducir una frase (Español → Inglés)");
             Console.WriteLine("2. Agregar palabras al diccionario");
             Console.WriteLine("0. Salir");
             Console.Write("Seleccione una opción: ");
@@ -41,13 +45,15 @@ class Traductor
                 Console.Write("Ingrese la frase en español: ");
                 string frase = Console.ReadLine();
                 string[] palabras = frase.Split(' ');
+
                 for (int i = 0; i < palabras.Length; i++)
                 {
                     string palabraLimpia = palabras[i].ToLower().Trim(',', '.', ';', ':');
-                    string traduccion = diccionario.FirstOrDefault(x => x.Value == palabraLimpia).Key;
-                    if (traduccion != null)
+                    var traduccion = diccionario.FirstOrDefault(x => x.Value == palabraLimpia);
+
+                    if (!string.IsNullOrEmpty(traduccion.Key))
                     {
-                        palabras[i] = palabras[i].Replace(palabraLimpia, traduccion);
+                        palabras[i] = traduccion.Key; // reemplazo directo
                     }
                 }
                 Console.WriteLine("Traducción parcial: " + string.Join(" ", palabras));
