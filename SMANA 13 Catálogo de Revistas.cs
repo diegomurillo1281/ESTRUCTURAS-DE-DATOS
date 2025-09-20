@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-
 /*
 ==============================================
    UNIVERSIDAD ESTATAL AMAZÓNICA
@@ -11,7 +8,7 @@ using System.Collections.Generic;
 
 public class CatalogoRevistas
 {
-    private static List<string> catalogo = new List<string>
+    private static string[] catalogo =
     {
         "Revista de Ciencia",
         "Tecnología Hoy",
@@ -28,49 +25,48 @@ public class CatalogoRevistas
 
     public static void Main()
     {
-        Console.WriteLine("==============================================");
-        Console.WriteLine("   UNIVERSIDAD ESTATAL AMAZÓNICA");
-        Console.WriteLine("   Estudiante: DIEGO JAIME MURILLO ORDEÑANA");
-        Console.WriteLine("   Proyecto: Catálogo de Revistas en C#");
-        Console.WriteLine("==============================================\n");
+        System.Console.WriteLine("==============================================");
+        System.Console.WriteLine("   UNIVERSIDAD ESTATAL AMAZÓNICA");
+        System.Console.WriteLine("   Estudiante: DIEGO JAIME MURILLO ORDEÑANA");
+        System.Console.WriteLine("   Proyecto: Catálogo de Revistas en C#");
+        System.Console.WriteLine("==============================================\n");
 
         bool continuar = true;
 
         while (continuar)
         {
-            Console.WriteLine("\n--- Catálogo de Revistas ---");
-            Console.WriteLine("1. Buscar revista");
-            Console.WriteLine("2. Salir");
-            Console.Write("Opción: ");
-            string opcion = Console.ReadLine();
+            System.Console.WriteLine("\n--- Catálogo de Revistas ---");
+            System.Console.WriteLine("1. Buscar revista");
+            System.Console.WriteLine("2. Salir");
+            System.Console.Write("Opción: ");
+            string opcion = System.Console.ReadLine();
 
             if (opcion == "1")
             {
-                Console.Write("Título a buscar: ");
-                string titulo = Console.ReadLine();
+                System.Console.Write("Título a buscar: ");
+                string titulo = System.Console.ReadLine();
 
                 bool encontrado = BusquedaIterativa(titulo);
-                Console.WriteLine(encontrado ? "Encontrado" : "No encontrado");
+                System.Console.WriteLine(encontrado ? "Encontrado" : "No encontrado");
             }
             else if (opcion == "2")
             {
                 continuar = false;
-                Console.WriteLine("Adiós...");
+                System.Console.WriteLine("Adiós...");
             }
             else
             {
-                Console.WriteLine("Opción no válida.");
+                System.Console.WriteLine("Opción no válida.");
             }
         }
     }
 
-    // Método de búsqueda simple (iterativa)
+    // Búsqueda iterativa en el arreglo
     public static bool BusquedaIterativa(string titulo)
     {
         foreach (string t in catalogo)
-            if (t.Equals(titulo, StringComparison.OrdinalIgnoreCase))
+            if (t.Equals(titulo, System.StringComparison.OrdinalIgnoreCase))
                 return true;
         return false;
     }
 }
-
