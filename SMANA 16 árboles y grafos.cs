@@ -7,8 +7,6 @@ import time
 import random
 import sys
 
-# Agente de IA utilizado: Gemini (Google)
-# Porcentaje de código generado por IA: 20%
 # Descripción: El agente fue utilizado para la conceptualización de la estructura de datos optimizada (diccionario)
 # para la búsqueda por clave de hash, y para generar un esqueleto inicial del código. La lógica de implementación
 # y la clase completa fueron escritas manualmente para este reporte.
